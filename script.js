@@ -1,59 +1,90 @@
-function computerPlay() {
+const selPlayerScore = document.querySelector('.player-score');
+const selComputerScore = document.querySelector('.computer-score');
+const selChoices = document.querySelectorAll('.choice-img');
+const selResult = document.querySelector('.result');
+const selPlayAgain = document.querySelector('.play-again');
 
+let playerScore = 0;
+let computerScore = 0;
+
+function computerPlay() {
     let hand = "";
     switch(Math.floor(Math.random() * 3)) {
         case 0:
-            hand = "rock";
+            hand = "Rock";
             break;
         case 1:
-            hand = "paper";
+            hand = "Paper";
             break;
         case 2:
-            hand = "scissors";
+            hand = "Scissors";
     }
     return hand;
 }
 
 function playRound(playerSelection, computerSelection) {
-    let result = "";
+    
     switch (true) {
         case(playerSelection == computerSelection):
-            return "draw";
-        case(playerSelection == "rock" && computerSelection == "scissors"):
-        case(playerSelection == "paper" && computerSelection == "rock"):
-        case(playerSelection == "scissors" && computerSelection == "paper"):
-            return "win";
-        default:
-            return "lose";
-    }
-
-    return result;
-}
-
-function game() {
-    let playerScore = 0;
-    let computerScore = 0;
-    for (let i = 0; i < 5; i++) {
-        let playerSelection = window.prompt('Rock, Paper, or Scissors?').toLowerCase();
-        let computerSelection = computerPlay();
-        result = playRound(playerSelection, computerSelection);
-        if (result == "win") {
-            console.log(`You win! ${playerSelection} beats ${computerSelection}`);
-            playerScore++;
-        } else if (result == "lose") {
-            console.log(`You lose! ${playerSelection} loses to ${computerSelection}`);
-            computerScore++;
-        }  else {
-            console.log(`Its a draw!`);
-        }
-        if (playerScore === 3 || computerScore === 3) {
+            selResult.textContent = 'Draw!';
             break;
-        }
+        case(playerSelection == "Rock" && computerSelection == "Scissors"):
+        case(playerSelection == "Paper" && computerSelection == "Rock"):
+        case(playerSelection == "Scissors" && computerSelection == "Paper"):
+            selResult.textContent = `You Win! You chose ${playerSelection} while the Computer chose ${computerSelection}!`;
+            playerScore++;
+            break;
+        default:
+            selResult.textContent = `You Lose! You chose ${playerSelection} while the Computer chose ${computerSelection}!`
+            computerScore++;
+            break;
     }
-    console.log(playerScore);
-    console.log(computerScore);
-
-    return playerScore > computerScore ? "You win!" : "Computer wins!";
 }
 
-game();
+function playGame() {
+    
+    let playerSelection;
+    selChoices.forEach((choice) => {
+        choice.addEventListener('click', () => {
+            
+            if (choice.classList.contains('rock-img')) {
+                playerSelection = 'Rock';
+            } else if (choice.classList.contains('paper-img')) {
+                playerSelection = 'Paper';
+            } else if (choice.classList.contains('scissor-img')) {
+                playerSelection = 'Scissors';
+            }
+            
+            playRound(playerSelection, computerPlay())
+            selPlayerScore.textContent = playerScore;
+            selComputerScore.textContent = computerScore;
+            isGameOver();
+        });
+    });
+}
+
+function isGameOver() {
+    if (playerScore == 5 || computerScore == 5) {
+        selChoices.forEach((choice) => {
+            choice.classList.add("not-active");
+        })
+
+        if (playerScore > computerScore) {
+            selResult.textContent = 'You beat the Computer!';
+        } else {
+            selResult.textContent = 'You lost to the Computer!'
+        }
+        selPlayAgain.style.visibility = 'visible';
+        playAgain();
+    }
+}
+
+function playAgain() {
+    selPlayAgain.addEventListener('click', () => {
+        window.location.reload();
+    });
+}
+
+playGame();
+
+
